@@ -1,0 +1,1003 @@
+
+
+
+
+                                  NSDFLIB
+
+                    Nuclear Structure Data File Library
+                               June 28, 1999
+
+
+
+   This document describes the contents of the subprogram library NSDFLIB
+   which  consists of the former subprogram libraries F77STR, NSDCNV, and
+   NSDMTH  and  supercedes  the  individual   documentation   for   these
+   libraries.
+
+        All subprograms in this library are written  to  conform  to  the
+   ANSI standard for FORTRAN '77 and are, therefore, machine independent.
+
+        ____ __ ___________
+        List of Subprograms
+
+        1.  String processing subprograms
+            a.  Integer Function LENSTR (string)
+            b.  Integer Function TYPSTR (string)
+            c.  Subroutine ADDSTR (string, pos, new)
+            d.  Subroutine DELSTR (string, pos, len)
+            e.  Subroutine SQZSTR (string, char)
+            f.  Subroutine REPCHR (string, old, new)
+            g.  Subroutine REPSTR (string, old, new)
+            h.  Integer Function INDEXF (string, pos, substr)
+            i.  Integer Function BREAK (string, pos, brkstr)
+            j.  Integer Function SPAN (string, pos, spnstr)
+            k.  Real Function VALSTR (string)
+                Double Precision Function DVALST (string)
+            l.  Integer Function IVLSTR (string)
+            m.  Integer Function RLSCN (string, pos, value)
+                Integer Function DRLSCN (string, pos, dvalue)
+            n.  Integer Function INTSCN (string, pos, signed, value)
+            o.  Subroutine NUMSTR (number, string)
+            p.  Subroutine LBSUP (string)
+            q.  Subroutine PADLFT (string, len)
+
+
+        2.  Number to string and string to number subprograms
+            a.  Subroutine CNVS2U (SX, SDX, Y ,DY)
+                Entry DCNVSU (SX, SDX, X, DX)
+            b.  Subroutine ZSYM (EL, SYM)
+                Entry IZEL (SYM, EL)
+            c.  Subroutine CNVU2S (Y, DY, SX, LENX, SDX, LENDX)
+                Entry DCNVUS (Z, DZ, SX, LENX, SDX, LENDX)
+            d.  Subroutine SUPALF (STR)
+            e.  Subroutine SUPEMB (STR)
+            f.  Logical Function IVRFLW(X,IPWR)
+            g.  Subroutine KNVIX (IX, IPWR, SX, LENX)
+            h.  Subroutine SCALDX (DX, IDX, IPWR)
+            i.  Subroutine SCALX (X, IX, IPWR)
+            j.  Subroutine SCAL10 (IX, IDX, IPWR)
+            k.  Subroutine KNVI2S(N,STR,LEN)
+
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 2
+   Introduction
+
+
+        3.  Mathematics subprograms
+            a.  Subroutine UADD (Z, DZ, X, DX, Y, DY)
+            b.  Subroutine USUB (Z, DZ, X, DX, Y, DY)
+            c.  Subroutine UMULT (Z, DZ, X, DX, Y, DY)
+            d.  Subroutine UDIV(Z, DZ, X, DX, Y, DY)
+            e.  Complex Function GAMA (X)
+            f.  Complex Function GAMZ (X)
+            g.  Complex Function GAM1 (X)
+            h.  Complex Function GAM2 (X)
+            i.  Complex Function HYPERG (A, B, X)
+
+
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 3
+   Fortran '77 String Processing Library
+
+
+                                Fortran '77
+                         String Processing Library
+
+
+
+
+        Fortran '77 provides many great and wondrous features for  string
+   processing.   However,  there  are some features that are not provided
+   for by the standard.  Therefore, the subprogram library,  F77STR,  has
+   been  written  to  include  some  useful  subroutines and functions to
+   manipulate character strings or  return  information  about  character
+   strings.
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 4
+   Fortran '77 String Processing Library - Integer Function LENSTR
+
+
+                      Integer Function LENSTR (string)
+
+
+
+        Function LENSTR will scan the argument string backwards from  the
+   last  character  to the first character.  It will return the character
+   position of the last non-blank (or non-null) character of the argument
+   string.  This value also represents the length of the string viewed as
+   terminating with the last non-blank (or non-null) character.
+
+   E.g.,
+
+           CHARACTER*10 STR
+           STR = 'ABC'
+           I = LEN(STR)
+           J = LENSTR(STR)
+           WRITE(*,*) I, J
+
+   would display the values 10, 3.
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 5
+   Fortran '77 String Processing Library - Integer Function TYPSTR
+
+
+                      Integer Function TYPSTR (string)
+
+
+
+        Function TYPSTR will scan the argument string and return  one  of
+   the following values as the type of the string:
+
+           0 if the string contains all blanks.
+           1 if the string contains all digits (0 - 9) only.
+           2 if the string contains all upper case letters (A - Z).
+          -1 if the string contains other characters or is a mixture of types.
+          -2 if the string is a FORTRAN number
+
+   E.g.,
+
+           INTEGER TYPSTR
+           CHARACTER*5 STRING
+           STRING = '13579'
+           WRITE(*,*) TYPSTR(STRING)
+
+   would display the value 1.
+   Trailing blanks are ignored but leading blanks count  as  non-numeric,
+   non-alpha  characters except that for FORTRAN numbers beginning blanks
+   are also allowed.
+
+        Please note that since TYPSTR starts with the letter T it must be
+   declared  as  being of integer type by the calling program.  Also note
+   that in determining a FORTRAN number the functions  INTSCN  and  RLSCN
+   are  used.   Any  side  effects  of  these  functions  may  affect the
+   determination.
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 6
+   Fortran '77 String Processing Library - Subroutine ADDSTR
+
+
+                    Subroutine ADDSTR (string, pos, new)
+
+
+
+        Subroutine ADDSTR will insert the new string  into  the  existing
+   string by moving the characters of the existing string starting at the
+   specified position to the right by an amount equal to  the  length  of
+   the new string.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = 'ABCD'
+           CALL ADDSTR(STRING, 3, 'XYZ')
+           WRITE(*,*) STRING
+
+   would display the value 'ABXYZCD   '.
+
+        Please note that if the resulting string exceeds  the  length  of
+   the  first argument then the resulting string will be truncated on the
+   right before the argument is returned from the subroutine.
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 7
+   Fortran '77 String Processing Library - Subroutine DELSTR
+
+
+                    Subroutine DELSTR (string, pos, len)
+
+
+
+        Subroutine DELSTR will delete the specified number of  characters
+   from  the  argument  string  starting  at the specified position.  The
+   remaining characters to the right will be moved left.   The  resulting
+   string  will  be  padded  on  the  right  with  blanks to fill out the
+   argument string's length.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = 'ABXYZCD'
+           CALL DELSTR(STRING, 3, 3)
+           WRITE(*,*) STRING
+
+   would display the value 'ABCD      '.
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 8
+   Fortran '77 String Processing Library - Subroutine SQZSTR
+
+
+                      Subroutine SQZSTR (string, char)
+
+
+
+        Subroutine SQZSTR will scan the argument string looking  for  the
+   specified  character.   When  one  is  found it will be deleted (as in
+   DELSTR).  The scan will continue looking for all of the occurrences of
+   the  specified  character.  The possibly shorter string will be padded
+   on the right with blanks as needed.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = 'NOW IS THE'
+           CALL SQZSTR(STRING, ' ')
+           WRITE(*,*) STRING
+
+   would display the value 'NOWISTHE  '
+   See also subroutine LBSUP.
+
+   NSDFLIB - Nuclear Structure Data File Library                          Page 9
+   Fortran '77 String Processing Library - Subroutine REPCHR
+
+
+                    Subroutine REPCHR (string, old, new)
+
+
+
+        Subroutine REPCHR will scan the argument string looking  for  any
+   of the characters that exist within the old string.  If any are found,
+   they will be replaced by the  corresponding  character  from  the  new
+   string.  The old and new strings should be the same length.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = 'NOW IS THE'
+           CALL REPCHR(STRING, ' AEIOU', '_aeiou')
+           WRITE(*,*) STRING
+
+   would display the value 'NoW_iS_THe'.
+   See also subroutine REPSTR.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 10
+   Fortran '77 String Processing Library - Subroutine REPSTR
+
+
+                    Subroutine REPSTR (string, old, new)
+
+
+
+        Subroutine REPSTR will scan the argument string searching for all
+   occurrences  of  the  old  string.   If  any are found the will all be
+   replaced by the new string.  If the new string  is  CHAR(0)  (i.e.,  a
+   string  of length 1 with value the character null) then the old string
+   will be removed and nothing will replace it.  The length  of  the  old
+   and new strings may be greater than or equal to one character.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = 'NOW IS THE'
+           CALL REPSTR(STRING, 'IS', 'WAS')
+           WRITE(*,*) STRING
+
+   would display the value 'NOW WAS TH'.
+
+        Please note that the subroutine REPSTR will call the  subroutines
+   DELSTR  and ADDSTR to delete the old string and add the new string (if
+   needed).  Any side effects of these subroutines  will  hold  true  for
+   subroutine REPSTR.
+
+        See also subroutine REPSTR.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 11
+   Fortran '77 String Processing Library - Integer Function INDEXF
+
+
+               Integer Function INDEXF (string, pos, substr)
+
+
+
+        Function INDEXF behaves in  a  manner  similar  to  the  standard
+   function  INDEX  except  that INDEXF controls where the search for the
+   sub-string should begin with the argument  pos.   Occurrences  of  the
+   sub-string  which  precede  position  pos will not be considered.  The
+   value returned will be zero (0) or the index of  the  sub-string  with
+   respect to the beginning of string as is the case with INDEX.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = 'ABC ABC AB'
+           I = INDEXF(STRING, 3, 'A')
+           WRITE(*,*) I
+
+   would display the value 5.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 12
+   Fortran '77 String Processing Library - Integer Function BREAK
+
+
+                Integer Function BREAK (string, pos, brkstr)
+
+
+
+        Function BREAK  will  scan  the  argument  string  starting  from
+   position  pos  looking  for  the first character (the break character)
+   which is one of the characters in the break  string.   If  found,  the
+   position  of  the  break character in string will be returned.  If not
+   found, the length of string  plus  one  (i.e.,  the  position  of  the
+   character  after  the  last character in string) will be returned.  If
+   the starting position, pos, is not within the limits of  the  argument
+   string,  the  position pos will be returned.  Characters should not be
+   repeated in the break string.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           INTEGER BREAK
+           STRING = 'NOW IS THE'
+           I = BREAK(STRING, 3, 'AEIOU')
+           WRITE(*,*) I
+
+   would display the value 5.
+
+        Please note that since BREAK starts with the letter B it must  be
+   declared as being of integer type by the calling program.
+
+        See also integer function SPAN.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 13
+   Fortran '77 String Processing Library - Integer Function SPAN
+
+
+                Integer Function SPAN (string, pos, spnstr)
+
+
+
+        Function  SPAN  will  scan  the  argument  string  starting  from
+   position  pos  looking  for  the first character (the break character)
+            ___
+   which is not one of the characters in the span string.  If found,  the
+   position  of  the  break character in string will be returned.  If not
+   found, the length of string  plus  one  (i.e.,  the  position  of  the
+   character  after  the  last character in string) will be returned.  If
+   the starting position, pos, is not within the limits of  the  argument
+   string,  the  position pos will be returned.  Characters should not be
+   repeated in the break string.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           INTEGER SPAN
+           STRING = '   NOW THE'
+           I = SPAN(STRING, 1, ' ')
+           WRITE(*,*) I
+
+   would display the value 4.
+
+        Please note that since SPAN starts with the letter S it  must  be
+   declared as being of integer type by the calling program.
+
+        See also integer function BREAK.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 14
+   Fortran '77 String Processing Library - Real Function VALSTR
+
+
+                       Real Function VALSTR (string)
+                  Double Precision Function DVALST(string)
+
+
+        Function VALSTR will scan  the  argument  string  looking  for  a
+   leading  real type numeric value (see RLSCN).  The value returned will
+   be the floating point value of the text scanned.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = '123.45E2'
+           VALUE = VALSTR(STRING)
+           WRITE(*,*) VALUE
+
+   would display the value 12345.00.
+
+   Double Precision Function DVALST  will  return  the  double  precision
+   value of the scanned string.
+
+        Please note that  the  functions  VALSTR  and  DVALSTR  call  the
+   functions RLSCN and DRLSCN, respectively to obtain the returned value.
+   Any side effects of these functions will hold true for  the  functions
+   VALSTR and DVALSTR.
+
+        See also  integer  functions  RLSCN  and  DRLSCN  and  subroutine
+   CNVS2U.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 15
+   Fortran '77 String Processing Library - Integer Function IVLSTR
+
+
+                      Integer Function IVLSTR (string)
+
+
+        Function IVLSTR will scan  the  argument  string  looking  for  a
+   leading  integer  type numeric value (see INTSCN).  The value returned
+   will be the integer value of the text scanned.  Please note  that  any
+   side  effects  of  the function INTSCN will hold true for the function
+   IVLSTR.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = '123.45E2'
+           IVALUE = IVLSTR(STRING)
+           WRITE(*,*) IVALUE
+
+   would display the value 123.
+
+        See also integer function INTSCN.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 16
+   Fortran '77 String Processing Library - Integer Function RLSCN
+
+
+                Integer Function RLSCN (string, pos, value)
+                Integer Function DRLSCN (string, pos, value)
+
+
+        Function RLSCN will  scan  the  argument  string  looking  for  a
+   leading  real  type  numeric  value.   Scanning begins at the position
+   specified by pos and continues to the  end  of  the  string.   Leading
+   blanks  will  be  ignored.   Value  is set to the numeric value of the
+   string (internal floating point form).  The function value is  set  to
+   the  position within the string where the numeric string ends plus one
+   (i.e., the break character).
+
+        The numeric string must have the form (after leading blanks):
+
+           [sign] d+ ['.' d*] ['E' [sign] d+]      or
+           [sign]     '.' d+  ['E' [sign] d+]
+
+        where sign is '+' or '-',
+           d* is zero or more digits,
+           d+ is one or more digits,
+           '.' and 'E' are literal ('e' is also accepted),
+           brackets ([ and ]) delimit optional sequences.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           INTEGER RLSCN
+           STRING = '123.45E2  '
+           IPOS = RLSCN(STRING, 1, VALUE)
+           WRITE(*,*) IPOS, VALUE
+
+   would display the values 9, 12345.00.
+
+        Please note that since RLSCN starts with the letter R it must  be
+   declared as being of integer type by the calling program.
+
+   Integer function DRLSCN will perform the same function  as  RLSCN  but
+   DVALUE  returned  will be in double precision.  Please note that since
+   DRLSCN starts with the letter D  it  must  be  declared  as  being  of
+   integer type by the calling program.
+
+        Also  note  that  since  the  ENSDF  formats  do  not  allow  "D"
+   floating-point  numbers  neither  RLSCN  or  DRLSCN recognize these as
+   FORTRAN numbers.
+
+        See also real function VALSTR, double precision  function  DVALST
+   and subroutine CNVS2U.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 17
+   Fortran '77 String Processing Library - Integer Function INTSCN
+
+
+            Integer Function INTSCN (string, pos, signed, value)
+
+
+        Function INTSCN will scan  the  argument  string  looking  for  a
+   leading  integer  type numeric value.  Scanning begins at the position
+   specified by pos and continues to the  end  of  the  string.   Leading
+   blanks  will  be  ignored.   The  search may be for a signed (signed =
+   .true.) or unsigned (signed =  .false.)  integer  value.   If  signed,
+   leading  plus  (+)  or  minus  (-) is allowed.  If unsigned, they will
+   terminate the scan as they are invalid for an unsigned integer.  Value
+   is  set  to  the  numeric value of the string (internal integer form).
+   The function value is set to the position within the string where  the
+   numeric  string  ends  plus  one  (i.e., the break character).  If the
+   starting position, pos, is not  within  the  limits  of  the  argument
+   string,  the  position  pos  will be returned and value will be set to
+   zero.  If the sign is the last character in the field (with no integer
+   following it), the position pos or the index of the last leading blank
+   will be returned and value will be set to zero.
+
+   E.g.,
+
+           CHARACTER*10 STRING
+           STRING = '-123.45E2 '
+           IPOS = INTSCN(STRING, 1, .TRUE.,  IVALUE)
+           JPOS = INTSCN(STRING, 1, .FALSE., JVALUE)
+           WRITE(*,*) IPOS, IVALUE, JPOS, JVALUE
+
+   would display the values 5, -123, 1, 0.
+
+        See also integer function IVLSTR.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 18
+   Fortran '77 String Processing Library - Subroutine NUMSTR
+
+
+                     Subroutine NUMSTR (number, string)
+
+
+        Subroutine NUMSTR will convert the argument integer  number  into
+   character  format  and  store  it in string.  The string will be right
+   justified and blank filled on the left.  If the length  of  string  is
+   too  small  to  contain the integer number, string will be filled with
+   "*"'s.
+
+   E.g.,
+
+           CHARACTER*5 STRING
+           CALL NUMSTR(137, STRING)
+           WRITE(*,*) STRING
+
+   would display the value '  137'.
+   See also subroutine KNVI2S.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 19
+   Fortran '77 String Processing Library - Subroutine LBSUP
+
+
+                         Subroutine LBSUP (string)
+
+   Subroutine LBSUP will delete leading blanks from the argument string.
+
+   example;
+           CHARACTER*10 STRING
+           STRING='      ABC'
+           CALL LBSUP(STRING)
+           WRITE(*,*) STRING
+
+   would display 'ABC'.
+   See also subroutine SQZSTR.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 20
+   Fortran '77 String Processing Library - Subroutine PADLFT
+
+
+                      Subroutine PADLFT (string, len)
+
+
+        Subroutine PADLFT will insert blanks to the left of the  argument
+   string to make the string len characters long.  If len is less than or
+   equal to the length of the string  (as  defined  by  integer  function
+   LENSTR)  or  greater  than the length of the string (as defined by the
+   intrinsic integer function LEN), no action will be taken.
+
+   example;
+           CHARACTER*10 STRING
+           STRING='ABC'
+           CALL PADLFT(STRING,6)
+           WRITE(*,*) STRING
+
+   will display '   ABC'.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 21
+   Fortran '77 Conversion Routines Library
+
+
+                                Fortran '77
+                       Library of Conversion Routines
+
+
+
+
+        Most of the subprograms in this library deal with the  conversion
+   of  numeric  variables  to  string  variables  or  the converse.  This
+   library was originally written by Bruce Barton; some modification  and
+   maintenance   was   done  by  Yako  Sanborn  (  4-11-88).   Additional
+   documentation was added by T.W.  Burrows (18-Feb-93).
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 22
+   Fortran '77 Conversion Routines Library - Subroutine CNVS2U
+
+
+                     Subroutine CNVS2U (SX, SDX, Y ,DY)
+                       Entry DCNVSU (SX, SDX, X, DX)
+
+
+
+        Subroutine CNVS2U converts strings  SX  and  SDX  into  two  real
+   numbers Y and DY where SDX and DY are the uncertainties of SX and Y.
+
+        Subroutine DCNVS2U (Entry in CNVS2U) converts strings SX and  SDX
+   into  two  double  precision numbers X and DX where SDX and DX are the
+   uncertainties of SX and DX.  The strings SX and SDX represent a  value
+   and its uncertainty in the ENSDF or Nuclear Data Sheets notation; that
+   is a value and the uncertainty in the least significant digits of  the
+|  value.   If  the  string SX is a single non-numeric character, zero is
+|  returned for the number and uncertainty
+
+   SX   input character string
+   SDX  input character string, uncertainty of SX
+   Y    output real number
+   DY   output real uncertainty
+   X    output double precision number
+   DX   output double precision uncertainty
+   The input strings are stored in temporary strings of length 24.
+
+        See also integer functions RLSCN and  DRLSCN  and  real  function
+   VALSTR.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 23
+   Fortran '77 Conversion Routines Library - Subroutine ZSYM
+
+
+                         Subroutine ZSYM (EL, SYM)
+                            Entry IZEL (SYM,EL)
+
+
+
+        Subroutine ZSYM translates element number (EL) into  symbol  text
+   (SYM).
+
+        Entry IZEL translates symbol text (SYM) into element number (EL).
+
+   EL  Integer, element number (Z)
+   SYM Corresponding character string of size 2
+
+   NOTE:  As of version 1.5 of NSDFLIB, the  IUPAC  adopted  symbols  for
+   Z=104  through  109 have been implemented in ZSYM and IZEL.  IZEL will
+   still properly interpret the old ENSDF formalism of "04" through  "09"
+   for  these elements but will return a warning message in the following
+   common:
+         Character*80 izlmsg
+         Common/IZLCOM/izlmsg
+   Version 1.5c implements the change of  the  chemical  symbol  for  the
+   neutron from "N " to "NN" in ZSYM and IZEL.
+
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 24
+   Fortran '77 Conversion Routines Library - Subroutine CNVU2S
+
+
+              Subroutine CNVU2S (Y, DY, SX, LENX, SDX, LENDX)
+                 Entry DCNVUS (X, DX, SX, LENX, SDX, LENDX)
+
+
+
+        Subroutine CNVU2S converts  the  real  number  Y,  with  optional
+   uncertainty DY, into string format.
+
+        Subroutine DCNVUS (Entry in CNVU2S) converts the double precision
+   number  X,  with optional double precision uncertainty DX, into string
+   format.
+
+   Y     input real number to be converted.
+   DY    input real number uncertainty of Y.
+   X     double precision number to be converted.
+   DX    double precision uncertainty of X.
+   SX    output string for X (and DX in format 2, see below).
+   LENX  input length specifier for SX.
+   SDX   output string for DX (format 1 and 3).
+   LENDX input length specifier for SDX.
+
+
+        One of the four formats is selected based on the values of DY (or
+   DX) and LENDX.
+
+         o  FORMAT 1:  DY (or DX) > 0.0, LENDX >0
+            SX and SDX are set.
+            SDX will be in the range of 1 to 25.
+            SX will be set as appropriate for the specified uncertainty.
+
+         o  FORMAT 2:  DY (or DX) > 0.0, LENDX <=0
+            SX only is set.  SDX is not modified.
+            Y (or X) and DY (or DX) are formatted into SX.
+            The uncertainty is not constrained to the range 1 to 25 if DX
+            >25.0.
+            If LENDX=0, the results will be set to the "natural" number
+            of significant digits.
+            If LENDX<0, the results will be set to -LENDX significant
+            digits.
+
+         o  FORMAT 3:  DY (or DX) =0.0, LENDX >=0
+            SX and SDX are set.
+            SX will be set using 4 significant digits.
+            SDX will be blanked out to a length of LENDX.
+
+         o  FORMAT 4:  DY (or DX) = 0.0, LENDX < 0
+            SX only is set, SDX is not modified.
+            SX will be set using -LENDX significant digits.
+
+   If the resultant string is  too  long  to  fit  within  the  specified
+   lengths  or  a  correct string can not be derived, the returned string
+   will be filled with "*"'s.
+
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 25
+   Fortran '77 Conversion Routines Library - Subroutine CNVU2S
+
+
+        CNVU2S (DCNVUS) calls subroutines IOVLSTR, KNVIX, SCALDX,  SCALX,
+   SCAL10, and KNVI2S in NSDCNV library.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 26
+   Fortran '77 Conversion Routines Library - Subroutine SUPALF
+
+
+                          Subroutine SUPALF (STR)
+
+
+
+        Subroutine SUPALF converts all non-numeric characters  in  string
+   to blanks (except ., E, + and -).
+
+   STR input and output character string
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 27
+   Fortran '77 Conversion Routines Library - Subroutine SUPEMB
+
+
+                          Subroutine SUPEMB (STR)
+
+
+
+        Subroutine SUPEMB finds and eliminates unwanted embedded +'s  and
+   -'s  so  that  +'s  and  -'s  will appear only at the beginning of the
+   string or right after E.
+
+        This subroutine should be used in addition to SUPALF when needed.
+
+   STR input and output character string
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 28
+   Fortran '77 Conversion Routines Library - Logical Function IVRFLW
+
+
+                     Logical Function IVRFLW (X, IPWR)
+
+
+   Logical  Function  IVRFLW  checks  to  see  if  X*10**(-IPWR)  may  be
+   converted  to  an integer without overflow errors.  The valid range is
+   between -2**31 and 2**31-1.  If the value  falls  within  this  range,
+   .FALSE.   is  returned.   If  it  is  outside  this  range, .TRUE.  is
+   returned.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 29
+   Fortran '77 Conversion Routines Library - Subroutine KNVIX
+
+
+                   Subroutine KNVIX (IX, IPWR, SX, LENX)
+
+
+   Subroutine KNVIX converts IX with scale factor IPWR to a string SX  of
+   length LENX.  If the string space is too small, stars (*) are returned
+   in string SX.  If IPWR > 0 or if IX * 10 ** IPWR  <  1E-4  exponential
+   format is used.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 30
+   Fortran '77 Conversion Routines Library - Subroutine SCALDX
+
+
+                     Subroutine SCALDX (DX, IDX, IPWR)
+
+
+   Subroutine SCALDX computes for the  double  precision  value  DX,  the
+   integer  IDX  in  the range from 3 to 25 and the integer IPWR which is
+   the power of 10  to  get  back  to  the  original.   For  example,  if
+   DX=0.0025D+0,  then  IDX=25  and  IPWR=-4  will  be  returned  and  if
+   DX=35D+0, then IDX=4 and IPWR=1 will be returned.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 31
+   Fortran '77 Conversion Routines Library - Subroutine SCALX
+
+
+                       Subroutine SCALX (X, IX, IPWR)
+
+
+   Subroutine SCALX computes for the double precision  value  X  and  the
+   integer   value  IPWR  the  integer  value  IX  which  corresponds  to
+   X*(10.0**(-IPWR)).  For example, if X=20.0D+0 and IPWR=-2,  IX=0  will
+   be returned and if X=-45.0D+0 and IPWR=-1, IX=-5 will be returned.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 32
+   Fortran '77 Conversion Routines Library - Subroutine SCAL10
+
+
+                     Subroutine SCAL10 (IX, IDX, IPWR)
+
+
+   Subroutine SCAL10 will, if either integer IX  or  IDX  are  modulo  10
+   (exactly  divisable  by  10),  reduce IX and IDX by a factor of 10 and
+   increase the integer IPWR by 1.  For example if  IX=300,  IDX=30,  and
+   IPWR=1,  IX,  then  the  values  will not be changed (both MOD(IX) and
+   MOD(IDX) are both equal to zero) and if IX=300,  IDX=35,  and  IPWR=1,
+   then  IX=30, IDX=3, and IPWR=2 will be returned (MOD(IDX) is not equal
+   to zero).
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 33
+   Fortran '77 Conversion Routines Library - Subroutine KNVI2S
+
+
+                        Subroutine KNVI2S(N,STR,LEN)
+
+
+   Subroutine KNVI2S converts  the  integer  N  into  a  right  justified
+   string,  STR,  with string length N.  If LEN is 0, the returned string
+   is left justified.  If N is too large for LEN  characters,  stars  (*)
+   will  fill  STR.   The  longest  string  considered  is  11 characters
+   according to the largest 4 byte character size.  See  also  subroutine
+   NUMSTR.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 34
+   Fortran '77 Mathematical Routines Library
+
+
+                                Fortran '77
+                           Mathematical Routines
+
+
+
+   This library was written by Bruce Barton; this documentation  is  from
+   the comments in his program (Yako Sanborn.  4-11-88).
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 35
+   Fortran '77 Mathematical Routines Library - Subroutine UADD
+
+
+                    Subroutine UADD(Z, DZ, X, DX, Y, DY)
+
+
+   UADD computes the sum of two numbers and the uncertainty of the sum.
+
+   X    input variable
+   DX   uncertainty of X
+   Y    input variable
+   DY   uncertainty of Y
+   Z    output variable   Z=X+Y
+   DZ   uncertainty of Z,
+        DZ=SQRT(DX*DX + DY*DY)
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 36
+   Fortran '77 Mathematical Routines Library - Subroutine USUB
+
+
+                    Subroutine USUB(Z, DZ, X, DX, Y, DY)
+
+
+   USUB computes the difference of two numbers and the uncertainty of the
+   difference.
+
+   X    input variable
+   DX   uncertainty of X
+   Y    input variable
+   DY   uncertainty of Y
+   Z    output variable Z=X-Y
+   DZ   uncertainty of Z,
+        DZ=SQRT(DX*DX + DY*DY)
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 37
+   Fortran '77 Mathematical Routines Library - Subroutine UMULT
+
+
+                   Subroutine UMULT(Z, DZ, X, DX, Y, DY)
+
+
+   UMULT computes the product of two numbers and the uncertainty  of  the
+   product.
+
+   X    input variable
+   DX   uncertainty of X
+   Y    input variable
+   DY   uncertainty of Y
+   Z    output variable Z=X*Y
+   DZ   uncertainty of Z,
+        DZ=Z * SQRT((DX/X)**2 + (DY/Y)**2)
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 38
+   Fortran '77 Mathematical Routines Library - Subroutine UDIV
+
+
+                    Subroutine UDIV(Z, DZ, X, DX, Y, DY)
+
+
+   UDIV computes the result of the division of one number by another  and
+   the uncertainty in the result.
+
+   X    input variable
+   DX   uncertainty of X
+   Y    input variable
+   DY   uncertainty of Y
+   Z    output variable Z=X/Y
+   DZ   uncertainty of Z,
+        DZ=Z * SQRT((DX/X)**2 + (DY/Y)**2)
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 39
+   Fortran '77 Mathematical Routines Library - Complex Function GAMA
+
+
+                         Complex Function GAMA (X)
+
+
+   Complex function GAMA returns value GAMMA(X) for all values of complex
+   variable X.
+
+   X    input variable, complex number
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 40
+   Fortran '77 Mathematical Routines Library - Complex Function GAMAZ
+
+
+                         Complex Function GAMZ (X)
+
+
+   Complex function GAMAZ returns value GAMMA(X) for X(real),X(imag) >=0.
+
+   X    input variable, complex number
+        X(real), X(imag) >= 0.
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 41
+   Fortran '77 Mathematical Routines Library - Complex Function GAM1
+
+
+                         Complex Function GAM1 (X)
+
+
+   Complex function GAM1 returns value GAMMA(X) for X(real) >= 0,
+   0 <= X(imag) <= 1
+
+   X    input variable, complex number
+        X(real) >= 0, 0 <= X(imag) <= 1
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 42
+   Fortran '77 Mathematical Routines Library - Complex Function GAM2
+
+
+                         Complex Function GAM2 (X)
+
+
+   Complex function GAM2 returns value GAMMA(X) for 0 <= X(real) <= 1,
+   0 <= X(imag) <= 1, using Pade-Power approximation of 1 / GAMMA(X).
+
+   X    input variable, complex number
+        0 <= X(real) <= 1, 0 <= X(imag) <= 1
+
+   NSDFLIB - Nuclear Structure Data File Library                         Page 43
+   Fortran '77 Mathematical Routines Library - Complex Function HYPERG
+
+
+                      Complex Function HYPERG(A, B, X)
+
+
+   Complex Function HYPERG returns HYPERGEOMETRIC(A, B, X).  Adopted from
+   1604 subroutine of C.W.  Nestor.
+
+   A    input variable, complex number
+   B    input variable, complex number
+   X    input variable, complex number
+
+   NSDFLIB - Nuclear Structure Data File Library             Page Index-1
+
+
+
+                                   INDEX
+
+
+
+   Conversion Routines Library, 21       Subroutine UDIV, 38
+     Logical Function IVRFLW, 28         Subroutine UMULT, 37
+     Subroutine CNVS2U, 22               Subroutine USUB, 36
+       Entry DCNVSU, 22
+     Subroutine CNVU2S, 24             String Processing Library, 3
+       Entry DCNVUS, 24                  Integer Function BREAK, 12
+     Subroutine KNVI2S, 33               Integer Function INDEXF, 11
+     Subroutine KNVIX, 29                Integer Function INTSCN, 17
+     Subroutine SCAL10, 32               Integer Function IVLSTR, 15
+     Subroutine SCALDX, 30               Integer Function LENSTR, 4
+     Subroutine SCALX, 31                Integer Function RLSCN, 16
+     Subroutine SUPALF, 26                 Integer Function DRLSCN, 16
+     Subroutine SUPEMB, 27               Integer Function SPAN, 13
+     Subroutine ZSYM, 23                 Integer Function TYPSTR, 5
+       Entry IZEL, 23                    Real Function VALSTR, 14
+                                           Double Precision Function
+   Introduction, 1                             DVALST, 14
+                                         Subroutine ADDSTR, 6
+   Mathematical Routines Library, 34     Subroutine DELSTR, 7
+     Complex Function GAM1, 41           Subroutine LBSUP, 19
+     Complex Function GAM2, 42           Subroutine NUMSTR, 18
+     Complex Function GAMA, 39           Subroutine PADLFT, 20
+     Complex Function GAMAZ, 40          Subroutine REPCHR, 9
+     Complex Function HYPERG, 43         Subroutine REPSTR, 10
+     Subroutine UADD, 35                 Subroutine SQZSTR, 8

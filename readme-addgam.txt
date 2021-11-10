@@ -1,0 +1,58 @@
+                                     ADDGAM
+                           Version 1.4 [Feb. 7, 2001]
+ 
+ 
+          Author:  J.K.Tuli
+                   National Nuclear Data Center
+                   Building 197D
+                   Brookhaven National Laboratory
+                   Upton, NY 11973
+                   Phone: 631-344-5080 FAX: 631-344-2806
+                   Email: "NNDCJT@BNL"
+ 
+               This program adds gammas to  the  Adopted  Levels  when  all
+          gamma's  come  from  one data set.  If gammas come from more than
+          one data set but are non-overlapping,  the  program  may  be  run
+          successively with different gamma data sets as input.
+ 
+          Input files (ENSDF format):
+ 
+          1.  Data set containing the adopted levels.  Sample  input  file:
+              ADDGAML.DAT
+ 
+          2.  Data set containing the gammas to  be  added.   Sample  input
+              file:  ADDGAMG.DAT
+ 
+ 
+          Output file:  Merged set containing the information  in  (1)  and
+                the gammas from (2).  Sample output file:  ADDGAM.NEW
+ 
+          Terminal dialog:  The user will be  asked  to  provide  the  file
+                names  for  the data set containing the adopted levels, the
+                file for the gammas to be added, and the file for  the  new
+                data set.
+ 
+          Compilation and  loading  instructions:   This  program  requires
+                subroutines from the NSDFLIB.FOR package.
+ 
+          Additional documentation:  None
+ 
+                                   Version History
+          1       19-Sep-86
+          1(1)    15-Jan-87  IbmPC MDC added.  NE changed to NEQV
+          1(2)     2-Nov-87  VAX MDC READONLY added in OPEN data file
+          1(3)    13-Apr-93  Specifically typed all variables and
+                               functions
+                             Delinted using FLINT 2.83
+                             (TWB)
+          1.4      7-Feb-01  Added UNX MDC coding. (RRK)
+ 
+                                     Disclaimer
+ 
+               Neither  the  Associated  Universities,  Inc.,  nor  the  US
+          Department  of  Energy  make  any  warranty  or  assume any legal
+          responsibility for the results produced by the program.
+ 
+ 
+ 
+                                       1
