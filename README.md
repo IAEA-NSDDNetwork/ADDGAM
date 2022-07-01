@@ -5,6 +5,11 @@ Address any feedback to the Brookhaven National Nuclear Data Center NNDC@BNL.GOV
 
 ADDGAM is part of the [ENSDF Analysis and Utility Programs](https://nds.iaea.org/public/ensdf_pgm/).
 
+## Change history
+
+#### 2001-02
+* Version 1.4
+
 ## Disclaimer
 
 Neither the author nor anybody else makes any warranty, express or implied, or assumes any legal liability or responsibility for the accuracy, completeness or usefulness of any information disclosed, or represents that its use would not infringe privately owned rights.
