@@ -1,5 +1,5 @@
 # ADDGAM
-Add gammas to adopted level dataset, if gammas are from only one data set. 
+Add gammas to adopted level dataset, if gammas are from only one data set. LEGACY CODE
 
 Address any feedback to the Brookhaven National Nuclear Data Center NNDC@BNL.GOV
 
